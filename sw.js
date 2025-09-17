@@ -1,22 +1,21 @@
-const CACHE_NAME = 'finanzas-v1';
-const FILES_TO_CACHE = [
-  './',
-  './index.html',
-  './manifest.json',
-  './icon-192.png',
-  './icon-512.png'
+const CACHE_NAME = "finanzas-cache-v1";
+const ASSETS = [
+  "./",
+  "./index.html",
+  "./manifest.json",
+  "./icon-192.png",
+  "./icon-512.png",
+  "https://cdn.jsdelivr.net/npm/chart.js" // librería externa
 ];
 
-// Instalar y cachear
-self.addEventListener('install', e => {
+self.addEventListener("install", e => {
   e.waitUntil(
-    caches.open(CACHE_NAME).then(cache => cache.addAll(FILES_TO_CACHE))
+    caches.open(CACHE_NAME).then(cache => cache.addAll(ASSETS))
   );
 });
 
-// Servir desde caché
-self.addEventListener('fetch', e => {
+self.addEventListener("fetch", e => {
   e.respondWith(
-    caches.match(e.request).then(resp => resp || fetch(e.request))
+    caches.match(e.request).then(res => res || fetch(e.request))
   );
 });
