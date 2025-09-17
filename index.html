@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Finanzas Diarias – PWA</title>
+<meta name="theme-color" content="#0d1b2a">
+<link rel="manifest" href="manifest.json">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+  :root {
+    --fondo:#0d1b2a; --panel:#1b263b; --acento:#3a86ff;
+    --texto:#e0e6ed; --verde:#38b000; --rojo:#e63946;
+  }
+  body{font-family:'Segoe UI',sans-serif;background:var(--fondo);color:var(--texto);margin:0;padding:20px;line-height:1.6;}
+  h1{text-align:center;color:var(--acento);margin-bottom:1.5rem;}
+  .panel{background:var(--panel);padding:20px;margin-bottom:20px;border-radius:12px;box-shadow:0 4px 12px rgba(0,0,0,0.4);}
+  h2{color:var(--acento);margin-top:0;}
+  input,select,button{width:100%;padding:10px;margin-top:8px;border:none;border-radius:8px;font-size:1rem;}
+  input,select{background:#27354a;color:var(--texto);}
+  button{background:var(--acento);color:#fff;font-weight:bold;cursor:pointer;transition:background 0.2s;}
+  button:hover{background:#2f6ed0;}
+  table{width:100%;border-collapse:collapse;margin-top:15px;font-size:0.9rem;}
+  th,td{padding:8px;text-align:left;border-bottom:1px solid #31445e;}
+  tr.ingreso td{color:var(--verde);font-weight:bold;}
+  tr.gasto td{color:var(--rojo);font-weight:bold;}
+  tr:hover{background:#2a3950;cursor:pointer;}
+  .acciones{display:none;text-align:right;}
+  tr.activo .acciones{display:block;}
+  .acciones button{width:auto;padding:4px 8px;font-size:0.8rem;margin-left:4px;}
+  .balance-box{display:flex;flex-wrap:wrap;gap:12px;justify-content:space-around;margin-top:10px;}
+  .balance-item{background:#27354a;padding:15px;border-radius:10px;text-align:center;flex:1 1 120px;min-width:120px;font-size:1rem;}
+  .verde{color:var(--verde);font-weight:bold;}
+  .rojo{color:var(--rojo);font-weight:bold;}
+  .saldos{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px;margin-top:10px;}
+  .saldo-box{background:#27354a;padding:12px;border-radius:10px;text-align:center;font-weight:600;cursor:pointer;transition:background 0.2s;}
+  .saldo-box:hover{background:#344a63;}
+  .saldo-monto{font-size:1.1rem;font-weight:bold;}
+  /* Nueva página de Ventas */
+  #paginaVentas{display:none;}
+</style>
+</head>
+<body>
+
+<h1>💰 Finanzas Diarias</h1>
+
+<!-- === Página Principal === -->
+<div id="paginaPrincipal">
+  <!-- Registro -->
+  <div class="panel">
+    <h2>Registrar Movimiento</h2>
+    <label>Tipo
+      <select id="tipo">
+        <option value="ingreso">Ingreso</option>
+        <option value="gasto">Gasto</option>
+      </select>
+    </label>
+    <label>Monto <input type="number" id="monto" placeholder="Ej: 150.00"></label>
+    <label>Billetera
+      <select id="billetera">
+        <option>PayPal</option><option>Payoneer</option><option>Hotmart</option>
+        <option>Yape</option><option>Western Union</option><option>MoneyGram</option>
+        <option>Binance</option><option>Efectivo</option>
+      </select>
+    </label>
+    <label>Descripción (opcional)
+      <input type="text" id="descripcion" placeholder="Detalle del movimiento">
+    </label>
+    <button onclick="agregarMovimiento()">Agregar</button>
+  </div>
+
+  <!-- Balance General -->
+  <div class="panel">
+    <h2>Balance General</h2>
+    <div class="balance-box">
+      <div class="balance-item verde"><strong>Ingresos</strong><br><span id="ingresosTotal">0</span></div>
+      <div class="balance-item rojo"><strong>Gastos</strong><br><span id="gastosTotal">0</span></div>
+      <div class="balance-item"><strong>Saldo Neto</strong><br><span id="saldoNeto">0</span></div>
+    </div>
+  </div>
+
+  <!-- Ventas del Día -->
+  <div class="panel" style="cursor:pointer;" onclick="abrirPaginaVentas()">
+    <h2>Ventas del Día (clic para ver estadísticas)</h2>
+    <div class="balance-item verde" style="margin:auto;max-width:220px;">
+      <strong>Total vendido hoy</strong><br><span id="ventasHoy">0</span>
+    </div>
+  </div>
+
+  <!-- Saldos por Billetera -->
+  <div class="panel">
+    <h2>Saldos por Billetera</h2>
+    <div class="saldos" id="saldos"></div>
+  </div>
+
+  <!-- Historial -->
+  <div class="panel">
+    <h2>Historial</h2>
+    <label>Filtrar por mes:
+      <input type="month" id="mesFiltro" onchange="renderTodo()">
+    </label>
+    <table id="tabla">
+      <thead>
+        <tr><th>Fecha</th><th>Billetera</th><th>Descripción</th><th>Monto</th><th>Acciones</th></tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+    <h3>Total del mes: <span id="totalMes">0</span></h3>
+  </div>
+</div>
+
+<!-- === Nueva Página Ventas === -->
+<div id="paginaVentas">
+  <button onclick="cerrarPaginaVentas()" style="margin-bottom:15px;">⬅️ Volver</button>
+  <div class="panel">
+    <h2>Estadísticas de Ventas</h2>
+    <label>Desde: <input type="date" id="desdeVenta"></label>
+    <label>Hasta: <input type="date" id="hastaVenta"></label>
+    <button onclick="mostrarEstadisticas()">Filtrar</button>
+    <div id="listaVentas" style="margin-top:15px;"></div>
+  </div>
+  <div class="panel">
+    <h3>Ventas por Día</h3>
+    <canvas id="graficoDias" height="200"></canvas>
+  </div>
+  <div class="panel">
+    <h3>Ventas por Mes</h3>
+    <canvas id="graficoMes" height="200"></canvas>
+  </div>
+</div>
+
+<script>
+const LS_KEY="finanzasMovimientos";
+let movimientos=JSON.parse(localStorage.getItem(LS_KEY))||[];
+
+function guardar(){localStorage.setItem(LS_KEY,JSON.stringify(movimientos));}
+
+function agregarMovimiento(){
+  const tipo=document.getElementById('tipo').value;
+  const monto=parseFloat(document.getElementById('monto').value);
+  const billetera=document.getElementById('billetera').value;
+  const desc=document.getElementById('descripcion').value;
+  if(isNaN(monto)||monto<=0){alert("Monto inválido");return;}
+  movimientos.push({id:Date.now(),fecha:new Date().toISOString(),tipo,monto,billetera,desc});
+  guardar();
+  document.getElementById('monto').value='';
+  document.getElementById('descripcion').value='';
+  renderTodo();
+}
+
+function editarMovimiento(id){
+  const m=movimientos.find(x=>x.id===id);
+  if(!m) return;
+  const nuevoMonto=parseFloat(prompt("Nuevo monto:",m.monto));
+  if(isNaN(nuevoMonto)||nuevoMonto<=0) return;
+  const nuevaDesc=prompt("Nueva descripción:",m.desc||"");
+  m.monto=nuevoMonto;m.desc=nuevaDesc;
+  guardar();renderTodo();
+}
+
+function eliminarMovimiento(id){
+  if(!confirm("¿Eliminar este movimiento?"))return;
+  movimientos=movimientos.filter(x=>x.id!==id);
+  guardar();renderTodo();
+}
+
+function renderTabla(filtroBilletera=null){
+  const tbody=document.querySelector("#tabla tbody");
+  tbody.innerHTML="";
+  const filtroMes=document.getElementById('mesFiltro').value;
+  let totalMes=0;
+  movimientos.forEach(m=>{
+    const fecha=new Date(m.fecha);
+    const mesStr=fecha.toISOString().slice(0,7);
+    if((!filtroMes||filtroMes===mesStr)&&(!filtroBilletera||m.billetera===filtroBilletera)){
+      const tr=document.createElement("tr");
+      tr.className=m.tipo;
+      tr.innerHTML=`<td>${fecha.toLocaleDateString()}</td>
+        <td>${m.billetera}</td><td>${m.desc||''}</td>
+        <td>${m.tipo==='gasto'?'-':''}${m.monto.toFixed(2)}</td>
+        <td class="acciones">
+          <button onclick="editarMovimiento(${m.id})">Editar</button>
+          <button onclick="eliminarMovimiento(${m.id})">Eliminar</button>
+        </td>`;
+      tr.addEventListener("click",()=>{
+        document.querySelectorAll("#tabla tbody tr").forEach(r=>r.classList.remove("activo"));
+        tr.classList.toggle("activo");
+      });
+      tbody.appendChild(tr);
+      totalMes+=m.tipo==='ingreso'?m.monto:-m.monto;
+    }
+  });
+  document.getElementById("totalMes").textContent=totalMes.toFixed(2);
+}
+
+function renderSaldos(){
+  const billeteras=["PayPal","Payoneer","Hotmart","Yape","Western Union","MoneyGram","Binance","Efectivo"];
+  const saldos={}; billeteras.forEach(b=>saldos[b]=0);
+  movimientos.forEach(m=>{saldos[m.billetera]+=m.tipo==='ingreso'?m.monto:-m.monto;});
+  const cont=document.getElementById("saldos");
+  cont.innerHTML="";
+  billeteras.forEach(b=>{
+    const div=document.createElement("div");
+    const monto=saldos[b];
+    const colorClass=monto<0?"rojo":"verde";
+    div.className="saldo-box";
+    div.innerHTML=`<strong>${b}</strong><br><span class="saldo-monto ${colorClass}">${monto.toFixed(2)}</span>`;
+    div.onclick=()=>renderTabla(b);
+    cont.appendChild(div);
+  });
+}
+
+function renderBalanceGeneral(){
+  let ingresos=0,gastos=0;
+  movimientos.forEach(m=>{m.tipo==='ingreso'?ingresos+=m.monto:gastos+=m.monto;});
+  document.getElementById("ingresosTotal").textContent=ingresos.toFixed(2);
+  document.getElementById("gastosTotal").textContent=gastos.toFixed(2);
+  document.getElementById("saldoNeto").textContent=(ingresos-gastos).toFixed(2);
+}
+
+function renderVentasHoy(){
+  const hoy=new Date().toISOString().slice(0,10);
+  let total=0;
+  movimientos.forEach(m=>{
+    if(m.tipo==='ingreso'&&m.fecha.slice(0,10)===hoy){total+=m.monto;}
+  });
+  document.getElementById("ventasHoy").textContent=total.toFixed(2);
+}
+
+function renderTodo(){
+  renderTabla();
+  renderSaldos();
+  renderBalanceGeneral();
+  renderVentasHoy();
+}
+renderTodo();
+
+// === Nueva Página Ventas ===
+function abrirPaginaVentas(){
+  document.getElementById('paginaPrincipal').style.display='none';
+  document.getElementById('paginaVentas').style.display='block';
+  mostrarEstadisticas();
+}
+function cerrarPaginaVentas(){
+  document.getElementById('paginaVentas').style.display='none';
+  document.getElementById('paginaPrincipal').style.display='block';
+}
+function mostrarEstadisticas(){
+  const desde=document.getElementById('desdeVenta').value;
+  const hasta=document.getElementById('hastaVenta').value;
+  const lista=document.getElementById('listaVentas');
+  let filtrados=movimientos.filter(m=>m.tipo==='ingreso');
+  if(desde) filtrados=filtrados.filter(m=>m.fecha.slice(0,10)>=desde);
+  if(hasta) filtrados=filtrados.filter(m=>m.fecha.slice(0,10)<=hasta);
+  lista.innerHTML=filtrados.map(m=>{
+    const f=new Date(m.fecha);
+    return `<p>${f.toLocaleDateString()} - ${m.billetera}: ${m.monto.toFixed(2)}</p>`;
+  }).join('')||'<em>Sin ventas</em>';
+
+  // Por día
+  const porDia={};
+  filtrados.forEach(m=>{
+    const d=m.fecha.slice(0,10);
+    porDia[d]=(porDia[d]||0)+m.monto;
+  });
+  const dias=Object.keys(porDia).sort();
+  const dataDia=dias.map(d=>porDia[d]);
+  if(window.grafDia) window.grafDia.destroy();
+  window.grafDia=new Chart(document.getElementById('graficoDias'),{
+    type:'bar',
+    data:{labels:dias,datasets:[{label:'Ventas por día',data:dataDia,backgroundColor:'#3a86ff'}]},
+    options:{scales:{x:{ticks:{color:'#fff'}},y:{ticks:{color:'#fff'}}}}
+  });
+
+  // Por mes
+  const porMes={};
+  filtrados.forEach(m=>{
+    const d=new Date(m.fecha);
+    const k=`${d.getFullYear()}-${('0'+(d.getMonth()+1)).slice(-2)}`;
+    porMes[k]=(porMes[k]||0)+m.monto;
+  });
+  const meses=Object.keys(porMes).sort();
+  const dataMes=meses.map(d=>porMes[d]);
+  if(window.grafMes) window.grafMes.destroy();
+  window.grafMes=new Chart(document.getElementById('graficoMes'),{
+    type:'line',
+    data:{labels:meses,datasets:[{label:'Ventas por mes',data:dataMes,borderColor:'#38b000',fill:false}]},
+    options:{scales:{x:{ticks:{color:'#fff'}},y:{ticks:{color:'#fff'}}}}
+  });
+}
+
+// PWA básico
+if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js');}
+</script>
+</body>
+</html>
