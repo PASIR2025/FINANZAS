@@ -12,13 +12,41 @@
     --fondo:#0d1b2a; --panel:#1b263b; --acento:#3a86ff;
     --texto:#e0e6ed; --verde:#38b000; --rojo:#e63946;
   }
-  body{font-family:'Segoe UI',sans-serif;background:var(--fondo);color:var(--texto);margin:0;padding:20px;line-height:1.6;}
-  h1{text-align:center;color:var(--acento);margin-bottom:1.5rem;}
-  .panel{background:var(--panel);padding:20px;margin-bottom:20px;border-radius:12px;box-shadow:0 4px 12px rgba(0,0,0,0.4);}
-  h2{color:var(--acento);margin-top:0;}
-  input,select,button{width:100%;padding:10px;margin-top:8px;border:none;border-radius:8px;font-size:1rem;}
+  *{box-sizing:border-box;}
+  body{
+    font-family:'Segoe UI',sans-serif;
+    background:var(--fondo);
+    color:var(--texto);
+    margin:0;
+    padding:12px;
+    line-height:1.6;
+  }
+  h1{text-align:center;color:var(--acento);margin:0 0 1rem;}
+  .panel{
+    background:var(--panel);
+    padding:16px;
+    margin-bottom:16px;
+    border-radius:12px;
+    box-shadow:0 4px 12px rgba(0,0,0,0.4);
+  }
+  h2,h3{color:var(--acento);margin-top:0;}
+  input,select,button{
+    width:100%;
+    padding:12px;
+    margin-top:8px;
+    border:none;
+    border-radius:8px;
+    font-size:1rem;
+  }
   input,select{background:#27354a;color:var(--texto);}
-  button{background:var(--acento);color:#fff;font-weight:bold;cursor:pointer;transition:background 0.2s;}
+  button{
+    background:var(--acento);
+    color:#fff;
+    font-weight:bold;
+    cursor:pointer;
+    transition:background 0.2s;
+    touch-action:manipulation;
+  }
   button:hover{background:#2f6ed0;}
   table{width:100%;border-collapse:collapse;margin-top:15px;font-size:0.9rem;}
   th,td{padding:8px;text-align:left;border-bottom:1px solid #31445e;}
@@ -28,16 +56,49 @@
   .acciones{display:none;text-align:right;}
   tr.activo .acciones{display:block;}
   .acciones button{width:auto;padding:4px 8px;font-size:0.8rem;margin-left:4px;}
-  .balance-box{display:flex;flex-wrap:wrap;gap:12px;justify-content:space-around;margin-top:10px;}
-  .balance-item{background:#27354a;padding:15px;border-radius:10px;text-align:center;flex:1 1 120px;min-width:120px;font-size:1rem;}
+  .balance-box{
+    display:flex;
+    flex-wrap:wrap;
+    gap:12px;
+    justify-content:space-around;
+    margin-top:10px;
+  }
+  .balance-item{
+    background:#27354a;
+    padding:12px;
+    border-radius:10px;
+    text-align:center;
+    flex:1 1 100px;
+    min-width:100px;
+    font-size:0.95rem;
+  }
   .verde{color:var(--verde);font-weight:bold;}
   .rojo{color:var(--rojo);font-weight:bold;}
-  .saldos{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:12px;margin-top:10px;}
-  .saldo-box{background:#27354a;padding:12px;border-radius:10px;text-align:center;font-weight:600;cursor:pointer;transition:background 0.2s;}
+  .saldos{
+    display:grid;
+    grid-template-columns:repeat(auto-fill,minmax(130px,1fr));
+    gap:12px;
+    margin-top:10px;
+  }
+  .saldo-box{
+    background:#27354a;
+    padding:12px;
+    border-radius:10px;
+    text-align:center;
+    font-weight:600;
+    cursor:pointer;
+    transition:background 0.2s;
+  }
   .saldo-box:hover{background:#344a63;}
   .saldo-monto{font-size:1.1rem;font-weight:bold;}
-  /* Nueva página de Ventas */
   #paginaVentas{display:none;}
+  /* Ajuste para móviles pequeños */
+  @media(max-width:480px){
+    h1{font-size:1.5rem;}
+    h2{font-size:1.2rem;}
+    .balance-item{font-size:0.9rem;padding:10px;}
+    input,select,button{font-size:0.95rem;}
+  }
 </style>
 </head>
 <body>
@@ -46,7 +107,6 @@
 
 <!-- === Página Principal === -->
 <div id="paginaPrincipal">
-  <!-- Registro -->
   <div class="panel">
     <h2>Registrar Movimiento</h2>
     <label>Tipo
@@ -63,13 +123,15 @@
         <option>Binance</option><option>Efectivo</option>
       </select>
     </label>
+    <label>Fecha
+      <input type="date" id="fechaMov">
+    </label>
     <label>Descripción (opcional)
       <input type="text" id="descripcion" placeholder="Detalle del movimiento">
     </label>
     <button onclick="agregarMovimiento()">Agregar</button>
   </div>
 
-  <!-- Balance General -->
   <div class="panel">
     <h2>Balance General</h2>
     <div class="balance-box">
@@ -79,21 +141,18 @@
     </div>
   </div>
 
-  <!-- Ventas del Día -->
   <div class="panel" style="cursor:pointer;" onclick="abrirPaginaVentas()">
-    <h2>Ventas del Día (clic para ver estadísticas)</h2>
+    <h2>Ventas del Día (toca para ver estadísticas)</h2>
     <div class="balance-item verde" style="margin:auto;max-width:220px;">
       <strong>Total vendido hoy</strong><br><span id="ventasHoy">0</span>
     </div>
   </div>
 
-  <!-- Saldos por Billetera -->
   <div class="panel">
     <h2>Saldos por Billetera</h2>
     <div class="saldos" id="saldos"></div>
   </div>
 
-  <!-- Historial -->
   <div class="panel">
     <h2>Historial</h2>
     <label>Filtrar por mes:
@@ -109,7 +168,7 @@
   </div>
 </div>
 
-<!-- === Nueva Página Ventas === -->
+<!-- === Página Ventas === -->
 <div id="paginaVentas">
   <button onclick="cerrarPaginaVentas()" style="margin-bottom:15px;">⬅️ Volver</button>
   <div class="panel">
@@ -135,26 +194,35 @@ let movimientos=JSON.parse(localStorage.getItem(LS_KEY))||[];
 
 function guardar(){localStorage.setItem(LS_KEY,JSON.stringify(movimientos));}
 
+function today(){return new Date().toISOString().slice(0,10);}
+document.getElementById('fechaMov').value=today();
+
 function agregarMovimiento(){
   const tipo=document.getElementById('tipo').value;
   const monto=parseFloat(document.getElementById('monto').value);
   const billetera=document.getElementById('billetera').value;
   const desc=document.getElementById('descripcion').value;
+  const fechaSel=document.getElementById('fechaMov').value;
   if(isNaN(monto)||monto<=0){alert("Monto inválido");return;}
-  movimientos.push({id:Date.now(),fecha:new Date().toISOString(),tipo,monto,billetera,desc});
+  const fechaISO=fechaSel?new Date(fechaSel+"T12:00:00").toISOString():new Date().toISOString();
+  movimientos.push({id:Date.now(),fecha:fechaISO,tipo,monto,billetera,desc});
   guardar();
   document.getElementById('monto').value='';
   document.getElementById('descripcion').value='';
+  document.getElementById('fechaMov').value=today();
   renderTodo();
 }
 
 function editarMovimiento(id){
-  const m=movimientos.find(x=>x.id===id);
-  if(!m) return;
+  const m=movimientos.find(x=>x.id===id); if(!m) return;
   const nuevoMonto=parseFloat(prompt("Nuevo monto:",m.monto));
   if(isNaN(nuevoMonto)||nuevoMonto<=0) return;
+  const nuevaFecha=prompt("Nueva fecha (AAAA-MM-DD):",m.fecha.slice(0,10));
+  if(nuevaFecha && !/^\d{4}-\d{2}-\d{2}$/.test(nuevaFecha)) return alert("Formato de fecha inválido");
   const nuevaDesc=prompt("Nueva descripción:",m.desc||"");
-  m.monto=nuevoMonto;m.desc=nuevaDesc;
+  m.monto=nuevoMonto;
+  if(nuevaFecha) m.fecha=new Date(nuevaFecha+"T12:00:00").toISOString();
+  m.desc=nuevaDesc;
   guardar();renderTodo();
 }
 
@@ -235,7 +303,7 @@ function renderTodo(){
 }
 renderTodo();
 
-// === Nueva Página Ventas ===
+/* === Página Ventas === */
 function abrirPaginaVentas(){
   document.getElementById('paginaPrincipal').style.display='none';
   document.getElementById('paginaVentas').style.display='block';
@@ -257,7 +325,6 @@ function mostrarEstadisticas(){
     return `<p>${f.toLocaleDateString()} - ${m.billetera}: ${m.monto.toFixed(2)}</p>`;
   }).join('')||'<em>Sin ventas</em>';
 
-  // Por día
   const porDia={};
   filtrados.forEach(m=>{
     const d=m.fecha.slice(0,10);
@@ -269,10 +336,10 @@ function mostrarEstadisticas(){
   window.grafDia=new Chart(document.getElementById('graficoDias'),{
     type:'bar',
     data:{labels:dias,datasets:[{label:'Ventas por día',data:dataDia,backgroundColor:'#3a86ff'}]},
-    options:{scales:{x:{ticks:{color:'#fff'}},y:{ticks:{color:'#fff'}}}}
+    options:{responsive:true,maintainAspectRatio:false,
+             scales:{x:{ticks:{color:'#fff'}},y:{ticks:{color:'#fff'}}}}
   });
 
-  // Por mes
   const porMes={};
   filtrados.forEach(m=>{
     const d=new Date(m.fecha);
@@ -285,11 +352,12 @@ function mostrarEstadisticas(){
   window.grafMes=new Chart(document.getElementById('graficoMes'),{
     type:'line',
     data:{labels:meses,datasets:[{label:'Ventas por mes',data:dataMes,borderColor:'#38b000',fill:false}]},
-    options:{scales:{x:{ticks:{color:'#fff'}},y:{ticks:{color:'#fff'}}}}
+    options:{responsive:true,maintainAspectRatio:false,
+             scales:{x:{ticks:{color:'#fff'}},y:{ticks:{color:'#fff'}}}}
   });
 }
 
-// PWA básico
+/* PWA */
 if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js');}
 </script>
 </body>
