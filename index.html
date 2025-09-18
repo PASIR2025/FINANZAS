@@ -37,7 +37,6 @@
   .saldo-box:hover{background:#344a63;}
   .saldo-monto{font-size:1.1rem;font-weight:bold;}
   #paginaVentas{display:none;}
-  /* Estilo impresión */
   @media print {
     button, input, select {display:none !important;}
     body {background:#fff;color:#000;}
@@ -49,6 +48,22 @@
 
 <h1>💰 Finanzas Diarias</h1>
 
+<!-- === Selección de moneda y tipo de cambio === -->
+<div class="panel">
+  <h2>Moneda de visualización</h2>
+  <label>Moneda
+    <select id="monedaSelect">
+      <option value="USD">USD (base)</option>
+      <option value="PEN">PEN – Soles</option>
+      <option value="EUR">EUR – Euro</option>
+    </select>
+  </label>
+  <label>Tasa de cambio respecto al USD
+    <input type="number" id="tasaCambio" step="0.0001" value="3.80">
+  </label>
+  <small>Los datos se guardan en <strong>USD</strong> y solo se convierten al mostrar.</small>
+</div>
+
 <!-- === Página Principal === -->
 <div id="paginaPrincipal">
   <div class="panel">
@@ -59,7 +74,7 @@
         <option value="gasto">Gasto</option>
       </select>
     </label>
-    <label>Monto <input type="number" id="monto" placeholder="Ej: 150.00"></label>
+    <label>Monto (USD)<input type="number" id="monto" placeholder="Ej: 150.00"></label>
     <label>Billetera
       <select id="billetera">
         <option>PayPal</option><option>Payoneer</option><option>Hotmart</option>
@@ -141,6 +156,19 @@
 const LS_KEY="finanzasMovimientos";
 let movimientos=JSON.parse(localStorage.getItem(LS_KEY))||[];
 
+// ===== Conversión de moneda =====
+function getFactor(){
+  const sel=document.getElementById('monedaSelect').value;
+  const tasa=parseFloat(document.getElementById('tasaCambio').value)||1;
+  return sel==="USD"?1:tasa;
+}
+function formatCurrency(v){
+  const sel=document.getElementById('monedaSelect').value;
+  return `${(v*getFactor()).toFixed(2)} ${sel}`;
+}
+document.getElementById('monedaSelect').addEventListener('change',renderTodo);
+document.getElementById('tasaCambio').addEventListener('input',renderTodo);
+
 function guardar(){localStorage.setItem(LS_KEY,JSON.stringify(movimientos));}
 
 function agregarMovimiento(){
@@ -151,6 +179,7 @@ function agregarMovimiento(){
   const fechaSel=document.getElementById('fechaMov').value;
   if(isNaN(monto)||monto<=0){alert("Monto inválido");return;}
   const fechaISO = fechaSel ? new Date(fechaSel+"T12:00:00").toISOString() : new Date().toISOString();
+  // Guardamos SIEMPRE en USD
   movimientos.push({id:Date.now(),fecha:fechaISO,tipo,monto,billetera,desc});
   guardar();
   document.getElementById('monto').value='';
@@ -162,7 +191,7 @@ function agregarMovimiento(){
 function editarMovimiento(id){
   const m=movimientos.find(x=>x.id===id);
   if(!m) return;
-  const nuevoMonto=parseFloat(prompt("Nuevo monto:",m.monto));
+  const nuevoMonto=parseFloat(prompt("Nuevo monto (USD):",m.monto));
   if(isNaN(nuevoMonto)||nuevoMonto<=0) return;
   const nuevaFecha=prompt("Nueva fecha (AAAA-MM-DD):",m.fecha.slice(0,10));
   if(nuevaFecha && !/^\d{4}-\d{2}-\d{2}$/.test(nuevaFecha)) return alert("Formato de fecha inválido");
@@ -192,7 +221,7 @@ function renderTabla(filtroBilletera=null){
       tr.className=m.tipo;
       tr.innerHTML=`<td>${fecha.toLocaleDateString()}</td>
         <td>${m.billetera}</td><td>${m.desc||''}</td>
-        <td>${m.tipo==='gasto'?'-':''}${m.monto.toFixed(2)}</td>
+        <td>${m.tipo==='gasto'?'-':''}${formatCurrency(m.monto)}</td>
         <td class="acciones">
           <button onclick="editarMovimiento(${m.id})">Editar</button>
           <button onclick="eliminarMovimiento(${m.id})">Eliminar</button>
@@ -205,7 +234,7 @@ function renderTabla(filtroBilletera=null){
       totalMes+=m.tipo==='ingreso'?m.monto:-m.monto;
     }
   });
-  document.getElementById("totalMes").textContent=totalMes.toFixed(2);
+  document.getElementById("totalMes").textContent=formatCurrency(totalMes);
 }
 
 function renderSaldos(){
@@ -219,7 +248,7 @@ function renderSaldos(){
     const monto=saldos[b];
     const colorClass=monto<0?"rojo":"verde";
     div.className="saldo-box";
-    div.innerHTML=`<strong>${b}</strong><br><span class="saldo-monto ${colorClass}">${monto.toFixed(2)}</span>`;
+    div.innerHTML=`<strong>${b}</strong><br><span class="saldo-monto ${colorClass}">${formatCurrency(monto)}</span>`;
     div.onclick=()=>renderTabla(b);
     cont.appendChild(div);
   });
@@ -228,9 +257,9 @@ function renderSaldos(){
 function renderBalanceGeneral(){
   let ingresos=0,gastos=0;
   movimientos.forEach(m=>{m.tipo==='ingreso'?ingresos+=m.monto:gastos+=m.monto;});
-  document.getElementById("ingresosTotal").textContent=ingresos.toFixed(2);
-  document.getElementById("gastosTotal").textContent=gastos.toFixed(2);
-  document.getElementById("saldoNeto").textContent=(ingresos-gastos).toFixed(2);
+  document.getElementById("ingresosTotal").textContent=formatCurrency(ingresos);
+  document.getElementById("gastosTotal").textContent=formatCurrency(gastos);
+  document.getElementById("saldoNeto").textContent=formatCurrency(ingresos-gastos);
 }
 
 function renderVentasHoy(){
@@ -239,7 +268,7 @@ function renderVentasHoy(){
   movimientos.forEach(m=>{
     if(m.tipo==='ingreso'&&m.fecha.slice(0,10)===hoy){total+=m.monto;}
   });
-  document.getElementById("ventasHoy").textContent=total.toFixed(2);
+  document.getElementById("ventasHoy").textContent=formatCurrency(total);
 }
 
 function renderTodo(){
@@ -272,7 +301,7 @@ function mostrarEstadisticas(){
   if(hasta) filtrados=filtrados.filter(m=>m.fecha.slice(0,10)<=hasta);
   lista.innerHTML=filtrados.map(m=>{
     const f=new Date(m.fecha);
-    return `<p>${f.toLocaleDateString()} - ${m.billetera}: ${m.monto.toFixed(2)}</p>`;
+    return `<p>${f.toLocaleDateString()} - ${m.billetera}: ${formatCurrency(m.monto)}</p>`;
   }).join('')||'<em>Sin ventas</em>';
 
   const porDia={};
@@ -281,11 +310,11 @@ function mostrarEstadisticas(){
     porDia[d]=(porDia[d]||0)+m.monto;
   });
   const dias=Object.keys(porDia).sort();
-  const dataDia=dias.map(d=>porDia[d]);
+  const dataDia=dias.map(d=>porDia[d]*getFactor());
   if(window.grafDia) window.grafDia.destroy();
   window.grafDia=new Chart(document.getElementById('graficoDias'),{
-    type:'bar',
-    data:{labels:dias,datasets:[{label:'Ventas por día',data:dataDia,backgroundColor:'#3a86ff'}]},
+    type:'line',
+    data:{labels:dias,datasets:[{label:`Ventas (${document.getElementById('monedaSelect').value})`,data:dataDia,borderColor:'#3a86ff',fill:false,tension:0.3,pointRadius:4}]},
     options:{scales:{x:{ticks:{color:'#fff'}},y:{ticks:{color:'#fff'}}}}
   });
 
@@ -296,11 +325,11 @@ function mostrarEstadisticas(){
     porMes[k]=(porMes[k]||0)+m.monto;
   });
   const meses=Object.keys(porMes).sort();
-  const dataMes=meses.map(d=>porMes[d]);
+  const dataMes=meses.map(d=>porMes[d]*getFactor());
   if(window.grafMes) window.grafMes.destroy();
   window.grafMes=new Chart(document.getElementById('graficoMes'),{
     type:'line',
-    data:{labels:meses,datasets:[{label:'Ventas por mes',data:dataMes,borderColor:'#38b000',fill:false}]},
+    data:{labels:meses,datasets:[{label:`Ventas Mensuales (${document.getElementById('monedaSelect').value})`,data:dataMes,borderColor:'#38b000',fill:false,tension:0.3,pointRadius:4}]},
     options:{scales:{x:{ticks:{color:'#fff'}},y:{ticks:{color:'#fff'}}}}
   });
 }
