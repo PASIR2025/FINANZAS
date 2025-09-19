@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Finanzas Diarias – PWA</title>
 <meta name="theme-color" content="#0d1b2a">
 <link rel="manifest" href="manifest.json">
@@ -13,12 +13,12 @@
     --texto:#e0e6ed; --verde:#38b000; --rojo:#e63946;
   }
   body{font-family:'Segoe UI',sans-serif;background:var(--fondo);color:var(--texto);margin:0;padding:20px;line-height:1.6;}
-  h1{text-align:center;color:var(--acento);margin-bottom:1.5rem;}
+  h1{text-align:center;color:var(--acento);margin:0 0 1rem;}
   .panel{background:var(--panel);padding:20px;margin-bottom:20px;border-radius:12px;box-shadow:0 4px 12px rgba(0,0,0,0.4);}
   h2{color:var(--acento);margin-top:0;}
   input,select,button{width:100%;padding:10px;margin-top:8px;border:none;border-radius:8px;font-size:1rem;}
   input,select{background:#27354a;color:var(--texto);}
-  button{background:var(--acento);color:#fff;font-weight:bold;cursor:pointer;transition:background 0.2s;}
+  button{background:var(--acento);color:#fff;font-weight:bold;cursor:pointer;transition:background 0.2s;border:none;}
   button:hover{background:#2f6ed0;}
   table{width:100%;border-collapse:collapse;margin-top:15px;font-size:0.9rem;}
   th,td{padding:8px;text-align:left;border-bottom:1px solid #31445e;}
@@ -37,6 +37,14 @@
   .saldo-box:hover{background:#344a63;}
   .saldo-monto{font-size:1.1rem;font-weight:bold;}
   #paginaVentas{display:none;}
+  /* icon buttons */
+  .icon-bar{display:flex;justify-content:flex-end;gap:8px;margin-bottom:12px;}
+  .icon-btn{
+    background:transparent;border:1px solid rgba(255,255,255,0.06);
+    color:var(--acento);border-radius:50%;width:40px;height:40px;
+    display:flex;align-items:center;justify-content:center;font-size:18px;cursor:pointer;
+  }
+  .icon-btn:hover{background:rgba(255,255,255,0.02);}
   @media print {
     button, input, select {display:none !important;}
     body {background:#fff;color:#000;}
@@ -48,7 +56,13 @@
 
 <h1>💰 Finanzas Diarias</h1>
 
-<!-- === Selección de moneda y tipo de cambio === -->
+<!-- Iconos import / export -->
+<div class="icon-bar">
+  <button class="icon-btn" title="Importar respaldo" onclick="importarRespaldo()">⬆️</button>
+  <button class="icon-btn" title="Exportar respaldo" onclick="exportarRespaldo()">⬇️</button>
+</div>
+
+<!-- === Moneda y Tasa de cambio (solo lectura) === -->
 <div class="panel">
   <h2>Moneda de visualización</h2>
   <label>Moneda
@@ -58,9 +72,7 @@
       <option value="EUR">EUR – Euro</option>
     </select>
   </label>
-  <label>Tasa de cambio respecto al USD
-    <input type="number" id="tasaCambio" step="0.0001" value="3.80">
-  </label>
+  <p><strong>Tasa de cambio actual:</strong> <span id="tasaAuto">Cargando…</span></p>
   <small>Los datos se guardan en <strong>USD</strong> y solo se convierten al mostrar.</small>
 </div>
 
@@ -92,7 +104,6 @@
     <button onclick="window.print()">🖨️ Imprimir / Guardar PDF</button>
   </div>
 
-  <!-- Balance General -->
   <div class="panel">
     <h2>Balance General</h2>
     <div class="balance-box">
@@ -102,7 +113,6 @@
     </div>
   </div>
 
-  <!-- Ventas del Día -->
   <div class="panel" style="cursor:pointer;" onclick="abrirPaginaVentas()">
     <h2>Ventas del Día (clic para ver estadísticas)</h2>
     <div class="balance-item verde" style="margin:auto;max-width:220px;">
@@ -110,13 +120,11 @@
     </div>
   </div>
 
-  <!-- Saldos por Billetera -->
   <div class="panel">
     <h2>Saldos por Billetera</h2>
     <div class="saldos" id="saldos"></div>
   </div>
 
-  <!-- Historial -->
   <div class="panel">
     <h2>Historial</h2>
     <label>Filtrar por mes:
@@ -153,122 +161,243 @@
 </div>
 
 <script>
+/* ========== Datos & almacenamiento ========== */
 const LS_KEY="finanzasMovimientos";
-let movimientos=JSON.parse(localStorage.getItem(LS_KEY))||[];
+const LS_BACKUP_KEY="finanzas_backup";
+let movimientos = JSON.parse(localStorage.getItem(LS_KEY)) || [];
 
-// ===== Conversión de moneda =====
+/* guarda y también respalda automáticamente en otra clave */
+function guardar(){
+  localStorage.setItem(LS_KEY, JSON.stringify(movimientos));
+  // respaldo local automático (por si acaso)
+  try { localStorage.setItem(LS_BACKUP_KEY, JSON.stringify({at: new Date().toISOString(), data: movimientos})); } catch(e) {}
+}
+
+/* ========== Import / Export (respaldo) ========== */
+function exportarRespaldo(){
+  const data = JSON.stringify(movimientos, null, 2);
+  const blob = new Blob([data], {type: "application/json"});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  const ts = new Date().toISOString().slice(0,19).replace(/[:T]/g,'-');
+  a.download = `finanzas_respaldo_${ts}.json`;
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+function importarRespaldo(){
+  const inp = document.createElement('input');
+  inp.type = 'file';
+  inp.accept = 'application/json';
+  inp.onchange = e => {
+    const file = e.target.files[0];
+    if(!file) return;
+    const fr = new FileReader();
+    fr.onload = () => {
+      try {
+        const parsed = JSON.parse(fr.result);
+        if(!Array.isArray(parsed)) {
+          // maybe file stored with wrapper {data: [...]}
+          if(parsed && parsed.data && Array.isArray(parsed.data)) {
+            handleImportArray(parsed.data);
+            return;
+          }
+          throw new Error('Formato inválido');
+        }
+        handleImportArray(parsed);
+      } catch(err) {
+        alert("Archivo inválido: " + (err.message||err));
+      }
+    };
+    fr.readAsText(file);
+  };
+  inp.click();
+}
+
+function handleImportArray(arr){
+  if(!confirm("¿Deseas reemplazar tus datos actuales? (Aceptar = reemplazar, Cancelar = agregar sin duplicados)")) {
+    // agregar sin duplicados (por id)
+    const existingIds = new Set(movimientos.map(m=>m.id));
+    let added = 0;
+    arr.forEach(item=>{
+      if(!item || !item.id) {
+        // ensure id
+        item.id = Date.now() + Math.floor(Math.random()*10000);
+      }
+      if(!existingIds.has(item.id)){
+        movimientos.push(item);
+        existingIds.add(item.id);
+        added++;
+      }
+    });
+    guardar(); renderTodo();
+    alert(`Se agregaron ${added} movimientos (sin duplicar).`);
+    return;
+  }
+  // Reemplazar por completo
+  movimientos = arr.map(item => {
+    if(!item.id) item.id = Date.now() + Math.floor(Math.random()*10000);
+    return item;
+  });
+  guardar(); renderTodo();
+  alert("Respaldo cargado y datos reemplazados.");
+}
+
+/* ========== Tipo de cambio automático ========== */
+let rates = {PEN: 3.8, EUR: 0.9};
+const RATES_LS_KEY = 'fxRates';
+
+function loadRatesFromStorage(){
+  try{
+    const s = localStorage.getItem(RATES_LS_KEY);
+    if(s){
+      const parsed = JSON.parse(s);
+      if(parsed && parsed.rates) rates = parsed.rates;
+    }
+  }catch(e){}
+}
+loadRatesFromStorage();
+
+async function actualizarTasas(){
+  try{
+    // API gratuita: base USD
+    const res = await fetch("https://open.er-api.com/v6/latest/USD");
+    const j = await res.json();
+    if(j && j.rates){
+      if(j.rates.PEN) rates.PEN = j.rates.PEN;
+      if(j.rates.EUR) rates.EUR = j.rates.EUR;
+      // guardar
+      try { localStorage.setItem(RATES_LS_KEY, JSON.stringify({at:new Date().toISOString(), rates})); } catch(e){}
+      document.getElementById('tasaAuto').textContent = `1 USD = ${rates.PEN.toFixed(2)} PEN · 1 USD = ${rates.EUR.toFixed(4)} EUR`;
+      renderTodo();
+      return;
+    }
+    throw new Error('Sin rates en respuesta');
+  }catch(err){
+    // usa almacenado si falla
+    loadRatesFromStorage();
+    document.getElementById('tasaAuto').textContent = `1 USD = ${rates.PEN.toFixed(2)} PEN · 1 USD = ${rates.EUR.toFixed(4)} EUR (offline)`;
+  }
+}
+actualizarTasas();
+setInterval(actualizarTasas, 10 * 60 * 1000); // cada 10 minutos
+
+/* factor de conversión */
 function getFactor(){
-  const sel=document.getElementById('monedaSelect').value;
-  const tasa=parseFloat(document.getElementById('tasaCambio').value)||1;
-  return sel==="USD"?1:tasa;
+  const sel = document.getElementById('monedaSelect').value;
+  if(sel === 'USD') return 1;
+  if(sel === 'PEN') return rates.PEN || 1;
+  if(sel === 'EUR') return rates.EUR || 1;
+  return 1;
 }
 function formatCurrency(v){
-  const sel=document.getElementById('monedaSelect').value;
-  return `${(v*getFactor()).toFixed(2)} ${sel}`;
+  const sel = document.getElementById('monedaSelect').value;
+  const f = getFactor();
+  return `${(v * f).toFixed(2)} ${sel}`;
 }
-document.getElementById('monedaSelect').addEventListener('change',renderTodo);
-document.getElementById('tasaCambio').addEventListener('input',renderTodo);
+document.getElementById('monedaSelect').addEventListener('change', renderTodo);
 
-function guardar(){localStorage.setItem(LS_KEY,JSON.stringify(movimientos));}
-
+/* ========== Movimientos: agregar/editar/eliminar ========== */
 function agregarMovimiento(){
-  const tipo=document.getElementById('tipo').value;
-  const monto=parseFloat(document.getElementById('monto').value);
-  const billetera=document.getElementById('billetera').value;
-  const desc=document.getElementById('descripcion').value;
-  const fechaSel=document.getElementById('fechaMov').value;
-  if(isNaN(monto)||monto<=0){alert("Monto inválido");return;}
-  const fechaISO = fechaSel ? new Date(fechaSel+"T12:00:00").toISOString() : new Date().toISOString();
-  // Guardamos SIEMPRE en USD
-  movimientos.push({id:Date.now(),fecha:fechaISO,tipo,monto,billetera,desc});
+  const tipo = document.getElementById('tipo').value;
+  const monto = parseFloat(document.getElementById('monto').value);
+  const billetera = document.getElementById('billetera').value;
+  const desc = document.getElementById('descripcion').value;
+  const fechaSel = document.getElementById('fechaMov').value;
+  if(isNaN(monto) || monto <= 0){ alert("Monto inválido"); return; }
+  const fechaISO = fechaSel ? new Date(fechaSel + "T12:00:00").toISOString() : new Date().toISOString();
+  movimientos.push({ id: Date.now(), fecha: fechaISO, tipo, monto, billetera, desc });
   guardar();
-  document.getElementById('monto').value='';
-  document.getElementById('descripcion').value='';
-  document.getElementById('fechaMov').value=today();
+  document.getElementById('monto').value = '';
+  document.getElementById('descripcion').value = '';
+  document.getElementById('fechaMov').value = today();
   renderTodo();
 }
 
 function editarMovimiento(id){
-  const m=movimientos.find(x=>x.id===id);
+  const m = movimientos.find(x => x.id === id);
   if(!m) return;
-  const nuevoMonto=parseFloat(prompt("Nuevo monto (USD):",m.monto));
-  if(isNaN(nuevoMonto)||nuevoMonto<=0) return;
-  const nuevaFecha=prompt("Nueva fecha (AAAA-MM-DD):",m.fecha.slice(0,10));
+  const nuevoMonto = parseFloat(prompt("Nuevo monto (USD):", m.monto));
+  if(isNaN(nuevoMonto) || nuevoMonto <= 0) return;
+  const nuevaFecha = prompt("Nueva fecha (AAAA-MM-DD):", m.fecha.slice(0,10));
   if(nuevaFecha && !/^\d{4}-\d{2}-\d{2}$/.test(nuevaFecha)) return alert("Formato de fecha inválido");
-  const nuevaDesc=prompt("Nueva descripción:",m.desc||"");
-  m.monto=nuevoMonto;
-  if(nuevaFecha) m.fecha=new Date(nuevaFecha+"T12:00:00").toISOString();
-  m.desc=nuevaDesc;
-  guardar();renderTodo();
+  const nuevaDesc = prompt("Nueva descripción:", m.desc || "");
+  m.monto = nuevoMonto;
+  if(nuevaFecha) m.fecha = new Date(nuevaFecha + "T12:00:00").toISOString();
+  m.desc = nuevaDesc;
+  guardar(); renderTodo();
 }
 
 function eliminarMovimiento(id){
-  if(!confirm("¿Eliminar este movimiento?"))return;
-  movimientos=movimientos.filter(x=>x.id!==id);
-  guardar();renderTodo();
+  if(!confirm("¿Eliminar este movimiento?")) return;
+  movimientos = movimientos.filter(x => x.id !== id);
+  guardar(); renderTodo();
 }
 
-function renderTabla(filtroBilletera=null){
-  const tbody=document.querySelector("#tabla tbody");
-  tbody.innerHTML="";
-  const filtroMes=document.getElementById('mesFiltro').value;
-  let totalMes=0;
-  movimientos.forEach(m=>{
-    const fecha=new Date(m.fecha);
-    const mesStr=fecha.toISOString().slice(0,7);
-    if((!filtroMes||filtroMes===mesStr)&&(!filtroBilletera||m.billetera===filtroBilletera)){
-      const tr=document.createElement("tr");
-      tr.className=m.tipo;
-      tr.innerHTML=`<td>${fecha.toLocaleDateString()}</td>
+/* ========== Renderizado tablas, saldos, balance y ventas ========== */
+function renderTabla(filtroBilletera = null){
+  const tbody = document.querySelector("#tabla tbody");
+  tbody.innerHTML = "";
+  const filtroMes = document.getElementById('mesFiltro').value;
+  let totalMes = 0;
+  movimientos.forEach(m => {
+    const fecha = new Date(m.fecha);
+    const mesStr = fecha.toISOString().slice(0,7);
+    if((!filtroMes || filtroMes === mesStr) && (!filtroBilletera || m.billetera === filtroBilletera)){
+      const tr = document.createElement("tr");
+      tr.className = m.tipo;
+      // botones deben detener propagación para no activar la fila al tocarlos
+      tr.innerHTML = `<td>${fecha.toLocaleDateString()}</td>
         <td>${m.billetera}</td><td>${m.desc||''}</td>
         <td>${m.tipo==='gasto'?'-':''}${formatCurrency(m.monto)}</td>
         <td class="acciones">
-          <button onclick="editarMovimiento(${m.id})">Editar</button>
-          <button onclick="eliminarMovimiento(${m.id})">Eliminar</button>
+          <button onclick="event.stopPropagation();editarMovimiento(${m.id})">Editar</button>
+          <button onclick="event.stopPropagation();eliminarMovimiento(${m.id})">Eliminar</button>
         </td>`;
-      tr.addEventListener("click",()=>{
-        document.querySelectorAll("#tabla tbody tr").forEach(r=>r.classList.remove("activo"));
+      tr.addEventListener("click", () => {
+        document.querySelectorAll("#tabla tbody tr").forEach(r => r.classList.remove("activo"));
         tr.classList.toggle("activo");
       });
       tbody.appendChild(tr);
-      totalMes+=m.tipo==='ingreso'?m.monto:-m.monto;
+      totalMes += m.tipo === 'ingreso' ? m.monto : -m.monto;
     }
   });
-  document.getElementById("totalMes").textContent=formatCurrency(totalMes);
+  document.getElementById("totalMes").textContent = formatCurrency(totalMes);
 }
 
 function renderSaldos(){
-  const billeteras=["PayPal","Payoneer","Hotmart","Yape","Western Union","MoneyGram","Binance","Efectivo"];
-  const saldos={}; billeteras.forEach(b=>saldos[b]=0);
-  movimientos.forEach(m=>{saldos[m.billetera]+=m.tipo==='ingreso'?m.monto:-m.monto;});
-  const cont=document.getElementById("saldos");
-  cont.innerHTML="";
-  billeteras.forEach(b=>{
-    const div=document.createElement("div");
-    const monto=saldos[b];
-    const colorClass=monto<0?"rojo":"verde";
-    div.className="saldo-box";
-    div.innerHTML=`<strong>${b}</strong><br><span class="saldo-monto ${colorClass}">${formatCurrency(monto)}</span>`;
-    div.onclick=()=>renderTabla(b);
+  const billeteras = ["PayPal","Payoneer","Hotmart","Yape","Western Union","MoneyGram","Binance","Efectivo"];
+  const saldos = {};
+  billeteras.forEach(b => saldos[b] = 0);
+  movimientos.forEach(m => { saldos[m.billetera] += m.tipo === 'ingreso' ? m.monto : -m.monto; });
+  const cont = document.getElementById("saldos");
+  cont.innerHTML = "";
+  billeteras.forEach(b => {
+    const div = document.createElement("div");
+    const monto = saldos[b];
+    const colorClass = monto < 0 ? "rojo" : "verde";
+    div.className = "saldo-box";
+    div.innerHTML = `<strong>${b}</strong><br><span class="saldo-monto ${colorClass}">${formatCurrency(monto)}</span>`;
+    div.onclick = () => renderTabla(b);
     cont.appendChild(div);
   });
 }
 
 function renderBalanceGeneral(){
   let ingresos=0,gastos=0;
-  movimientos.forEach(m=>{m.tipo==='ingreso'?ingresos+=m.monto:gastos+=m.monto;});
-  document.getElementById("ingresosTotal").textContent=formatCurrency(ingresos);
-  document.getElementById("gastosTotal").textContent=formatCurrency(gastos);
-  document.getElementById("saldoNeto").textContent=formatCurrency(ingresos-gastos);
+  movimientos.forEach(m => { m.tipo === 'ingreso' ? ingresos += m.monto : gastos += m.monto; });
+  document.getElementById("ingresosTotal").textContent = formatCurrency(ingresos);
+  document.getElementById("gastosTotal").textContent = formatCurrency(gastos);
+  document.getElementById("saldoNeto").textContent = formatCurrency(ingresos - gastos);
 }
 
 function renderVentasHoy(){
-  const hoy=new Date().toISOString().slice(0,10);
-  let total=0;
-  movimientos.forEach(m=>{
-    if(m.tipo==='ingreso'&&m.fecha.slice(0,10)===hoy){total+=m.monto;}
+  const hoy = new Date().toISOString().slice(0,10);
+  let total = 0;
+  movimientos.forEach(m => {
+    if(m.tipo==='ingreso' && m.fecha.slice(0,10) === hoy) total += m.monto;
   });
-  document.getElementById("ventasHoy").textContent=formatCurrency(total);
+  document.getElementById("ventasHoy").textContent = formatCurrency(total);
 }
 
 function renderTodo(){
@@ -278,11 +407,11 @@ function renderTodo(){
   renderVentasHoy();
 }
 
-function today(){return new Date().toISOString().slice(0,10);}
-document.getElementById('fechaMov').value=today();
-renderTodo();
+/* utilidad */
+function today(){ return new Date().toISOString().slice(0,10); }
+document.getElementById('fechaMov').value = today();
 
-/* === Página Ventas === */
+/* === Estadísticas / Gráficos === */
 function abrirPaginaVentas(){
   document.getElementById('paginaPrincipal').style.display='none';
   document.getElementById('paginaVentas').style.display='block';
@@ -292,50 +421,53 @@ function cerrarPaginaVentas(){
   document.getElementById('paginaVentas').style.display='none';
   document.getElementById('paginaPrincipal').style.display='block';
 }
+
 function mostrarEstadisticas(){
   const desde=document.getElementById('desdeVenta').value;
   const hasta=document.getElementById('hastaVenta').value;
   const lista=document.getElementById('listaVentas');
-  let filtrados=movimientos.filter(m=>m.tipo==='ingreso');
-  if(desde) filtrados=filtrados.filter(m=>m.fecha.slice(0,10)>=desde);
-  if(hasta) filtrados=filtrados.filter(m=>m.fecha.slice(0,10)<=hasta);
-  lista.innerHTML=filtrados.map(m=>{
-    const f=new Date(m.fecha);
+  let filtrados = movimientos.filter(m => m.tipo === 'ingreso');
+  if(desde) filtrados = filtrados.filter(m => m.fecha.slice(0,10) >= desde);
+  if(hasta) filtrados = filtrados.filter(m => m.fecha.slice(0,10) <= hasta);
+  lista.innerHTML = filtrados.map(m => {
+    const f = new Date(m.fecha);
     return `<p>${f.toLocaleDateString()} - ${m.billetera}: ${formatCurrency(m.monto)}</p>`;
-  }).join('')||'<em>Sin ventas</em>';
+  }).join('') || '<em>Sin ventas</em>';
 
-  const porDia={};
-  filtrados.forEach(m=>{
-    const d=m.fecha.slice(0,10);
-    porDia[d]=(porDia[d]||0)+m.monto;
-  });
-  const dias=Object.keys(porDia).sort();
-  const dataDia=dias.map(d=>porDia[d]*getFactor());
+  // por día
+  const porDia = {};
+  filtrados.forEach(m => { const d = m.fecha.slice(0,10); porDia[d] = (porDia[d]||0) + m.monto; });
+  const dias = Object.keys(porDia).sort();
+  const dataDia = dias.map(d => porDia[d] * getFactor());
   if(window.grafDia) window.grafDia.destroy();
-  window.grafDia=new Chart(document.getElementById('graficoDias'),{
-    type:'line',
-    data:{labels:dias,datasets:[{label:`Ventas (${document.getElementById('monedaSelect').value})`,data:dataDia,borderColor:'#3a86ff',fill:false,tension:0.3,pointRadius:4}]},
-    options:{scales:{x:{ticks:{color:'#fff'}},y:{ticks:{color:'#fff'}}}}
+  window.grafDia = new Chart(document.getElementById('graficoDias'), {
+    type: 'line',
+    data: { labels: dias, datasets: [{ label:`Ventas (${document.getElementById('monedaSelect').value})`, data: dataDia, borderColor:'#3a86ff', fill:false, tension:0.2, pointRadius:4 }] },
+    options: { scales:{ x:{ ticks:{ color:'#fff' } }, y:{ ticks:{ color:'#fff' } } }, maintainAspectRatio: false }
   });
 
-  const porMes={};
-  filtrados.forEach(m=>{
-    const d=new Date(m.fecha);
-    const k=`${d.getFullYear()}-${('0'+(d.getMonth()+1)).slice(-2)}`;
-    porMes[k]=(porMes[k]||0)+m.monto;
+  // por mes
+  const porMes = {};
+  filtrados.forEach(m => {
+    const d = new Date(m.fecha);
+    const k = `${d.getFullYear()}-${('0'+(d.getMonth()+1)).slice(-2)}`;
+    porMes[k] = (porMes[k]||0) + m.monto;
   });
-  const meses=Object.keys(porMes).sort();
-  const dataMes=meses.map(d=>porMes[d]*getFactor());
+  const meses = Object.keys(porMes).sort();
+  const dataMes = meses.map(k => porMes[k] * getFactor());
   if(window.grafMes) window.grafMes.destroy();
-  window.grafMes=new Chart(document.getElementById('graficoMes'),{
-    type:'line',
-    data:{labels:meses,datasets:[{label:`Ventas Mensuales (${document.getElementById('monedaSelect').value})`,data:dataMes,borderColor:'#38b000',fill:false,tension:0.3,pointRadius:4}]},
-    options:{scales:{x:{ticks:{color:'#fff'}},y:{ticks:{color:'#fff'}}}}
+  window.grafMes = new Chart(document.getElementById('graficoMes'), {
+    type: 'line',
+    data: { labels: meses, datasets: [{ label:`Ventas Mensuales (${document.getElementById('monedaSelect').value})`, data: dataMes, borderColor:'#38b000', fill:false, tension:0.2, pointRadius:4 }] },
+    options: { scales:{ x:{ ticks:{ color:'#fff' } }, y:{ ticks:{ color:'#fff' } } }, maintainAspectRatio: false }
   });
 }
 
-/* PWA */
-if('serviceWorker' in navigator){navigator.serviceWorker.register('sw.js');}
+/* Init */
+renderTodo();
+
+/* PWA registration (opcional) */
+if('serviceWorker' in navigator){ navigator.serviceWorker.register('sw.js').catch(()=>{}); }
 </script>
 </body>
 </html>
