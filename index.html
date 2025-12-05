@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Eliane Beautys | Packs de cuidado facial</title>
+
+  <style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: "Segoe UI", system-ui, sans-serif;
+  background: #fff6fb;
+  color: #3d2a2a;
+  line-height: 1.5;
+}
+
+header {
+  background: linear-gradient(135deg, #ffd8e8, #ffb6d9);
+  padding: 3rem 1.5rem 4rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+header::before,
+header::after {
+  content: "";
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.55);
+}
+header::before { width: 260px; height: 260px; top: -120px; left: -80px; }
+header::after  { width: 220px; height: 220px; bottom: -120px; right: -40px; }
+
+.header-content { position: relative; z-index: 1; }
+
+.brand {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #d4a74f;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  text-shadow: 0px 0px 5px rgba(255,255,255,0.8);
+}
+
+h1 {
+  font-size: 2.4rem;
+  margin-top: .5rem;
+  color: #7f154c;
+  text-shadow: 0px 0px 3px rgba(255,255,255,0.7);
+}
+
+.subtitle {
+  max-width: 600px;
+  margin: .7rem auto 0;
+  color: #7f154c;
+  font-size: .98rem;
+}
+
+main {
+  max-width: 1050px;
+  margin: 2rem auto 3rem;
+  padding: 0 1.5rem;
+}
+
+.packs-title {
+  text-align: center;
+  font-size: 1.9rem;
+  margin-bottom: .4rem;
+  color: #d4a74f;
+  font-weight: 700;
+  text-shadow: 0px 0px 4px rgba(255,255,255,0.7);
+}
+
+.packs-subtitle {
+  text-align: center;
+  font-size: .95rem;
+  color: #7f154c;
+  margin-bottom: 1.5rem;
+}
+
+.packs-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+}
+
+@media (min-width: 900px) {
+  .packs-grid { grid-template-columns: repeat(3, 1fr); }
+}
+
+.pack-card {
+  background: #ffffff;
+  border-radius: 1rem;
+  padding: 1.2rem;
+  border: 2px solid #f1d79c;
+  box-shadow: 0 10px 25px rgba(212, 167, 79, 0.25);
+  display: flex;
+  flex-direction: column;
+  gap: .7rem;
+}
+
+.pack-img {
+  width: 100%;
+  height: 190px;
+  object-fit: cover;
+  border-radius: .8rem;
+  border: 2px solid #ffd8e8;
+}
+
+.pack-label {
+  font-size: .78rem;
+  color:#d4a74f;
+  text-transform: uppercase;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+}
+
+.pack-name {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color:#7f154c;
+}
+
+.pack-price {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color:#d4a74f;
+  margin-bottom: .2rem;
+}
+
+.pack-section-title {
+  font-size: .9rem;
+  font-weight: 700;
+  margin-top: .4rem;
+  color:#d4a74f;
+  display: flex;
+  align-items: center;
+  gap: .35rem;
+}
+
+.pack-text {
+  font-size: .9rem;
+  color:#5a3d3d;
+  margin-top: .2rem;
+}
+
+.pack-list {
+  margin-top: .3rem;
+  padding-left: 1.1rem;
+  font-size: .9rem;
+  color:#5a3d3d;
+}
+
+.pack-list li {
+  margin-bottom: .2rem;
+}
+
+.pack-divider {
+  margin-top: .4rem;
+  height: 1px;
+  background: #ffd8e8;
+  border: none;
+}
+
+.btn-whatsapp {
+  margin-top: .8rem;
+  text-decoration: none;
+  background: #d4a74f;
+  color:#fff;
+  padding: .7rem 1rem;
+  border-radius: 999px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: .4rem;
+  font-weight: 600;
+  font-size: .95rem;
+  box-shadow: 0 8px 18px rgba(212,167,79,0.35);
+  transition: .15s ease;
+}
+
+.btn-whatsapp:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 22px rgba(212,167,79,0.45);
+  background: #c2953e;
+}
+
+footer {
+  text-align:center;
+  padding:1.5rem;
+  font-size:.8rem;
+  color:#7f154c;
+}
+
+</style>
+</head>
+
+<body>
+  <header>
+    <div class="header-content">
+      <div class="brand">Eliane Beautys</div>
+      <h1>Transforma tu rostro naturalmente</h1>
+      <p class="subtitle">
+        Clases en vivo y contenido práctico para que tu piel luzca más firme, luminosa y rejuvenecida usando técnicas naturales.
+      </p>
+    </div>
+  </header>
+
+  <main>
+    <h2 class="packs-title">Elige tu Pack de Belleza</h2>
+    <p class="packs-subtitle">
+      Escríbeme por WhatsApp para reservar tu cupo, resolver dudas y coordinar horarios.
+    </p>
+
+    <section class="packs-grid">
+
+      <!-- PACK 1 -->
+      <article class="pack-card">
+        <img src="img/pack1.jpg" class="pack-img" alt="Pack 1 - Clase grupal en vivo">
+
+        <div class="pack-label">PAC-1</div>
+        <div class="pack-name">Clase Grupal en Vivo (Zoom)</div>
+        <div class="pack-price">S/ 40</div>
+
+        <div class="pack-section-title">
+          <span class="icon">✨</span> Detalles
+        </div>
+        <p class="pack-text">
+          Clase práctica en vivo, <strong>3 veces por semana</strong>, diseñada para que tu piel se vea más firme,
+          luminosa y sin inflamación desde la primera semana.
+        </p>
+
+        <div class="pack-section-title">
+          <span class="icon">📘</span> Lo que vas a aprender
+        </div>
+        <ul class="pack-list">
+          <li>✅ Masajes faciales para rejuvenecer</li>
+          <li>✅ Técnicas para prevenir y suavizar arrugas</li>
+          <li>✅ Masaje para un rostro más radiante y luminoso</li>
+          <li>✅ Cómo aplicar correctamente tus cremas y productos</li>
+          <li>✅ Cómo conocer tu tipo de piel y qué rutina te favorece</li>
+          <li>🍯 8 mascarillas naturales que aclaran, iluminan y rejuvenecen</li>
+        </ul>
+
+        <div class="pack-section-title">
+          <span class="icon">🍓</span> Incluye
+        </div>
+        <ul class="pack-list">
+          <li>💗 Consejos personalizados en cada clase</li>
+          <li>👭 Ambiente grupal motivador</li>
+          <li>📆 Clases en vivo 3 veces por semana</li>
+        </ul>
+
+        <hr class="pack-divider" />
+
+        <a class="btn-whatsapp" href="https://wa.link/kp14zk" target="_blank" rel="noopener noreferrer">
+          <span>💬</span> Comprar PAC-1 por WhatsApp
+        </a>
+      </article>
+
+      <!-- PACK 2 -->
+      <article class="pack-card">
+        <img src="img/pack2.jpg" class="pack-img" alt="Pack 2 - Clase personalizada 1:1">
+
+        <div class="pack-label">PAC-2</div>
+        <div class="pack-name">Clase Personalizada 1:1 (Zoom)</div>
+        <div class="pack-price">S/ 80</div>
+
+        <div class="pack-section-title">
+          <span class="icon">✨</span> Detalles
+        </div>
+        <p class="pack-text">
+          Clase privada donde trabajamos solo tu rostro: técnica correcta, correcciones en vivo y una
+          <strong>rutina personalizada</strong> que te dará resultados rápidos, firmes y naturales.
+        </p>
+
+        <div class="pack-section-title">
+          <span class="icon">📘</span> Lo que vas a aprender
+        </div>
+        <ul class="pack-list">
+          <li>✅ Masajes faciales personalizados para rejuvenecer</li>
+          <li>✅ Técnicas específicas para prevenir y suavizar arrugas</li>
+          <li>✅ Masajes para levantar, definir y dar forma al rostro</li>
+          <li>✅ Cómo aplicar correctamente tus cremas y productos</li>
+          <li>✅ Identificar tu tipo de piel y crear tu rutina ideal</li>
+          <li>🍓 12 mascarillas naturales (aclarantes, iluminadoras y rejuvenecedoras)</li>
+        </ul>
+
+        <div class="pack-section-title">
+          <span class="icon">🍯</span> Incluye
+        </div>
+        <ul class="pack-list">
+          <li>🗒 Plan semanal hecho totalmente a tu medida</li>
+          <li>💗 Correcciones en vivo para dominar la técnica</li>
+          <li>📎 Mini guía PDF personalizada</li>
+          <li>⏰ Tú eliges tu horario</li>
+        </ul>
+
+        <hr class="pack-divider" />
+
+        <a class="btn-whatsapp" href="https://wa.link/kp14zk" target="_blank" rel="noopener noreferrer">
+          <span>💬</span> Comprar PAC-2 por WhatsApp
+        </a>
+      </article>
+
+      <!-- PACK 3 -->
+      <article class="pack-card">
+        <img src="img/pack3.jpg" class="pack-img" alt="Pack 3 - Clase grabada acceso inmediato">
+
+        <div class="pack-label">PAC-3</div>
+        <div class="pack-name">Clase Grabada (Acceso inmediato)</div>
+        <div class="pack-price">S/ 30</div>
+
+        <div class="pack-section-title">
+          <span class="icon">✨</span> Detalles
+        </div>
+        <p class="pack-text">
+          Clase grabada práctica, perfecta para aprender a tu ritmo, repetir las veces que quieras
+          y dominar las técnicas sin presión.
+        </p>
+
+        <div class="pack-section-title">
+          <span class="icon">📘</span> Lo que vas a aprender
+        </div>
+        <ul class="pack-list">
+          <li>✅ Masajes faciales para rejuvenecer</li>
+          <li>✅ Técnicas para prevenir líneas de expresión</li>
+          <li>✅ Masajes para dar glow y luminosidad natural</li>
+          <li>✅ Cómo aplicar correctamente tus cremas</li>
+          <li>🍓 8 mascarillas naturales que aclaran, iluminan y rejuvenecen</li>
+        </ul>
+
+        <div class="pack-section-title">
+          <span class="icon">🍯</span> Incluye
+        </div>
+        <ul class="pack-list">
+          <li>🎥 3 videos adicionales: masajes + mascarillas</li>
+          <li>🔁 Acceso ilimitado 24/7 (los videos son tuyos)</li>
+          <li>💗 Aprende a tu ritmo, sin horarios</li>
+        </ul>
+
+        <hr class="pack-divider" />
+
+        <a class="btn-whatsapp" href="https://wa.link/kp14zk" target="_blank" rel="noopener noreferrer">
+          <span>💬</span> Comprar PAC-3 por WhatsApp
+        </a>
+      </article>
+
+    </section>
+  </main>
+
+  <footer>
+    © <span id="year"></span> Eliane Beautys. Todos los derechos reservados.
+  </footer>
+
+  <script>
+    document.getElementById("year").textContent = new Date().getFullYear();
+  </script>
+
+</body>
+</html>
