@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Eliane Beautys | Packs de cuidado facial</title>
+
+  <style>
+:root{--muted:#5a3d3d;}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: "Segoe UI", system-ui, sans-serif;
+  background: #fff6fb;
+  color: #3d2a2a;
+  line-height: 1.5;
+}
+
+header {
+  background: linear-gradient(135deg, #ffd8e8, #ffb6d9);
+  padding: 3rem 1.5rem 4rem;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+
+header::before,
+header::after {
+  content: "";
+  position: absolute;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.55);
+}
+header::before { width: 260px; height: 260px; top: -120px; left: -80px; }
+header::after  { width: 220px; height: 220px; bottom: -120px; right: -40px; }
+
+.header-content { position: relative; z-index: 1; }
+
+.brand {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #d4a74f;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  text-shadow: 0px 0px 5px rgba(255,255,255,0.8);
+}
+
+h1 {
+  font-size: 2.4rem;
+  margin-top: .5rem;
+  color: #7f154c;
+  text-shadow: 0px 0px 3px rgba(255,255,255,0.7);
+}
+
+.subtitle {
+  max-width: 600px;
+  margin: .7rem auto 0;
+  color: #7f154c;
+  font-size: .98rem;
+}
+
+main {
+  max-width: 1050px;
+  margin: 2rem auto 3rem;
+  padding: 0 1.5rem;
+}
+
+.packs-title {
+  text-align: center;
+  font-size: 1.9rem;
+  margin-bottom: .4rem;
+  color: #d4a74f;
+  font-weight: 700;
+  text-shadow: 0px 0px 4px rgba(255,255,255,0.7);
+}
+
+.packs-subtitle {
+  text-align: center;
+  font-size: .95rem;
+  color: #7f154c;
+  margin-bottom: 1.5rem;
+}
+
+.packs-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+}
+
+@media (min-width: 900px) {
+  .packs-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (min-width: 1100px) {
+  .packs-grid { grid-template-columns: repeat(2, 1fr); }
+}
+
+.pack-card {
+  background: #ffffff;
+  border-radius: 1rem;
+  padding: 1.2rem;
+  border: 2px solid #f1d79c;
+  box-shadow: 0 10px 25px rgba(212, 167, 79, 0.25);
+  display: flex;
+  flex-direction: column;
+  gap: .7rem;
+}
+
+.pack-img {
+  width: 100%;
+  height: 190px;
+  object-fit: cover;
+  border-radius: .8rem;
+  border: 2px solid #ffd8e8;
+}
+
+.pack-label {
+  font-size: .78rem;
+  color:#d4a74f;
+  text-transform: uppercase;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+}
+
+.pack-name {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color:#7f154c;
+}
+
+.pack-price {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color:#d4a74f;
+  margin-bottom: .2rem;
+}
+
+.pack-section-title {
+  font-size: .9rem;
+  font-weight: 700;
+  margin-top: .4rem;
+  color:#d4a74f;
+  display: flex;
+  align-items: center;
+  gap: .35rem;
+}
+
+.pack-text {
+  font-size: .9rem;
+  color:#5a3d3d;
+  margin-top: .2rem;
+}
+
+.pack-list {
+  margin-top: .3rem;
+  padding-left: 1.1rem;
+  font-size: .9rem;
+  color:#5a3d3d;
+}
+
+.pack-list li {
+  margin-bottom: .2rem;
+}
+
+.pack-divider {
+  margin-top: .4rem;
+  height: 1px;
+  background: #ffd8e8;
+  border: none;
+}
+
+.btn-whatsapp {
+  margin-top: .8rem;
+  text-decoration: none;
+  background: #d4a74f;
+  color:#fff;
+  padding: .7rem 1rem;
+  border-radius: 999px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: .4rem;
+  font-weight: 600;
+  font-size: .95rem;
+  box-shadow: 0 8px 18px rgba(212,167,79,0.35);
+  transition: .15s ease;
+}
+
+.btn-whatsapp:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 10px 22px rgba(212,167,79,0.45);
+  background: #c2953e;
+}
+
+footer {
+  text-align:center;
+  padding:1.5rem;
+  font-size:.8rem;
+  color:#7f154c;
+}
+
+</style>
+</head>
+
+<body>
+  <header>
+    <div class="header-content">
+      <div class="brand">Eliane Beautys</div>
+      <h1>Transforma tu rostro naturalmente</h1>
+      <p class="subtitle">
+        Clases en vivo y contenido práctico para que tu piel luzca más firme, luminosa y rejuvenecida usando técnicas naturales.
+      </p>
+    </div>
+  </header>
+
+  <main>
+    <h2 class="packs-title">Elige tu experiencia ideal</h2>
+    <p class="packs-subtitle">
+      Escríbeme por WhatsApp para reservar tu cupo, resolver dudas y coordinar horarios.
+    </p>
+
+        <section id="packs" class="packs-grid">
+
+      <!-- PAC 1 -->
+      <article class="pack-card">
+        <img src="img/pac_grupal.png" class="pack-img" alt="Clases en vivo grupales" loading="lazy">
+
+        <div class="pack-top">
+          <div class="pack-label">PAC-1</div>
+          <div class="badge">Vivo grupal</div>
+        </div>
+
+        <div class="pack-name">Clases en vivo grupales</div>
+        <div class="pack-price">S/ 50 <span style="font-size:.95rem;color:var(--muted);font-weight:800;">• 2 meses</span></div>
+
+        <div class="pack-section-title">✨ Incluye</div>
+        <ul class="pack-list">
+          <li>Masajes faciales que reafirmam y rejuvenecen</li>
+          <li>Mascarillas naturales que aclaran y nutren</li>
+          <li>Rutinas fáciles para hacer en casa (según tu tipo de piel)</li>
+        </ul>
+
+        <div class="pack-section-title">📅 Horario</div>
+        <p class="pack-text"><strong>Inicio:</strong> 23 de diciembre · <strong>Días:</strong> Mar • Jue • Sáb</p>
+
+        <hr class="pack-divider" />
+        <a class="btn-whatsapp" href="https://wa.link/kp14zk" target="_blank" rel="noopener noreferrer">
+          💖 Quiero vivir esta experiencia
+        </a>
+      </article>
+
+      <!-- PAC 2 -->
+      <article class="pack-card">
+        <img src="img/pac_personalizado.png" class="pack-img" alt="Clases personalizadas 1 a 1" loading="lazy">
+
+        <div class="pack-top">
+          <div class="pack-label">PAC-2</div>
+          <div class="badge">1:1</div>
+        </div>
+
+        <div class="pack-name">Clases personalizadas (1 a 1)</div>
+        <div class="pack-price">S/ 80 <span style="font-size:.95rem;color:var(--muted);font-weight:800;">• oferta especial</span></div>
+
+        <div class="pack-section-title">✨ Incluye</div>
+        <ul class="pack-list">
+          <li>Masajes faciales profesionales</li>
+          <li>Mascarillas naturales según tu piel</li>
+          <li>Rutina personalizada + cuidado facial correcto</li>
+        </ul>
+
+        <div class="pack-section-title">⏳ Duración</div>
+        <p class="pack-text"><strong>3 meses</strong> · <strong>Tú eliges tu horario</strong></p>
+
+        <hr class="pack-divider" />
+        <a class="btn-whatsapp" href="https://wa.link/kp14zk" target="_blank" rel="noopener noreferrer">
+          💖 Quiero vivir esta experiencia
+        </a>
+      </article>
+
+      <!-- PAC 3 -->
+      <article class="pack-card">
+        <img src="img/pac_presencial.png" class="pack-img" alt="Clases presenciales" loading="lazy">
+
+        <div class="pack-top">
+          <div class="pack-label">PAC-3</div>
+          <div class="badge">Presencial</div>
+        </div>
+
+        <div class="pack-name">Clases presenciales</div>
+        <div class="pack-price">S/ 100 <span style="font-size:.95rem;color:var(--muted);font-weight:800;">• 2 meses</span></div>
+
+        <div class="pack-section-title">✨ Aprenderás</div>
+        <ul class="pack-list">
+          <li>Masajes para reafirmar y rejuvenecer</li>
+          <li>Preparación de mascarillas naturales</li>
+          <li>Rutinas completas de cuidado facial</li>
+        </ul>
+
+        <div class="pack-section-title">🎁 Bonos (gratis)</div>
+        <ul class="pack-list">
+          <li>Ingredientes de todas las mascarillas</li>
+          <li>Guía física de masajes faciales</li>
+          <li>Guía física con 20 recetas de mascarillas</li>
+        </ul>
+
+        <div class="pack-section-title">📅 Horario</div>
+        <p class="pack-text"><strong>Inicio:</strong> 22 de diciembre · <strong>Días:</strong> Lun • Miér • Vie · <strong>Hora:</strong> 4:00 PM</p>
+
+        <hr class="pack-divider" />
+        <a class="btn-whatsapp" href="https://wa.link/kp14zk" target="_blank" rel="noopener noreferrer">
+          💖 Quiero vivir esta experiencia
+        </a>
+      </article>
+
+      <!-- PAC 4 -->
+      <article class="pack-card">
+        <img src="img/pac_grabadas.png" class="pack-img" alt="Clases grabadas" loading="lazy">
+
+        <div class="pack-top">
+          <div class="pack-label">PAC-4</div>
+          <div class="badge">Grabadas</div>
+        </div>
+
+        <div class="pack-name">Clases grabadas (acceso inmediato)</div>
+        <div class="pack-price">S/ 30 <span style="font-size:.95rem;color:var(--muted);font-weight:800;">• 1 año</span></div>
+
+        <div class="pack-section-title">✨ Incluye</div>
+        <ul class="pack-list">
+          <li>3 videos de masajes faciales (10 min c/u)</li>
+          <li>1 video extra + 10 recetas de mascarillas caseras</li>
+          <li>Ebook digital con recetas paso a paso</li>
+        </ul>
+
+        <hr class="pack-divider" />
+        <a class="btn-whatsapp" href="https://wa.link/kp14zk" target="_blank" rel="noopener noreferrer">
+          💖 Quiero vivir esta experiencia
+        </a>
+      </article>
+
+    </section>
+  </main>
+
+  <footer>
+    © <span id="year"></span> Eliane Beautys. Todos los derechos reservados.
+  </footer>
+
+  <script>
+    document.getElementById("year").textContent = new Date().getFullYear();
+  </script>
+
+</body>
+</html>

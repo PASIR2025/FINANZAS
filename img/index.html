@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Eliane Beautys | Packs de cuidado facial</title>
+  <meta name="description" content="Clases en vivo y contenido práctico de cuidado facial natural. Elige tu pack y reserva por WhatsApp." />
+
+  <!-- Open Graph (para que se vea bien al compartir) -->
+  <meta property="og:title" content="Eliane Beautys | Packs de cuidado facial" />
+  <meta property="og:description" content="Transforma tu rostro naturalmente con clases en vivo y técnicas prácticas." />
+  <meta property="og:type" content="website" />
+  <!-- Pon aquí una imagen real cuando tengas (recomendado 1200x630) -->
+  <!-- <meta property="og:image" content="https://tudominio.com/img/og.jpg" /> -->
+
+  <style>
+    :root{
+      --bg: #fff6fb;
+      --card: #ffffff;
+      --text: #3d2a2a;
+      --muted:#6b4b4b;
+
+      --pink-1:#ffd8e8;
+      --pink-2:#ffb6d9;
+
+      --gold:#d4a74f;
+      --gold-2:#c2953e;
+      --wine:#7f154c;
+
+      --shadow: 0 12px 28px rgba(212, 167, 79, 0.22);
+      --shadow-2: 0 10px 22px rgba(212,167,79,0.32);
+      --radius: 18px;
+      --radius2: 14px;
+      --max: 1100px;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.55;
+    }
+    a { color: inherit; }
+    img { display:block; max-width: 100%; }
+
+    /* Accesibilidad: foco visible */
+    :focus-visible{
+      outline: 3px solid rgba(127, 21, 76, .35);
+      outline-offset: 3px;
+      border-radius: 10px;
+    }
+
+    /* HEADER */
+    header {
+      background: radial-gradient(900px 500px at 20% 0%, rgba(255,255,255,.65), transparent 55%),
+                  radial-gradient(700px 420px at 90% 35%, rgba(255,255,255,.55), transparent 60%),
+                  linear-gradient(135deg, var(--pink-1), var(--pink-2));
+      padding: 3.2rem 1.2rem 4.2rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      border-bottom: 1px solid rgba(127, 21, 76, .08);
+    }
+
+    .container {
+      max-width: var(--max);
+      margin: 0 auto;
+      padding: 0 1.2rem;
+    }
+
+    .topbar{
+      display:flex;
+      justify-content: space-between;
+      align-items:center;
+      gap: 1rem;
+      margin-bottom: 1.1rem;
+    }
+
+    .brand {
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: var(--gold);
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      text-shadow: 0px 0px 6px rgba(255,255,255,0.75);
+      user-select:none;
+    }
+
+    .mini-actions{
+      display:flex;
+      gap:.55rem;
+      flex-wrap: wrap;
+      justify-content:center;
+    }
+
+    .chip{
+      text-decoration:none;
+      background: rgba(255,255,255,.7);
+      border: 1px solid rgba(127, 21, 76, .10);
+      padding: .45rem .7rem;
+      border-radius: 999px;
+      font-weight: 700;
+      font-size: .86rem;
+      color: var(--wine);
+      transition: transform .15s ease, background .15s ease;
+    }
+    .chip:hover{ transform: translateY(-1px); background: rgba(255,255,255,.88); }
+
+    h1 {
+      font-size: clamp(2rem, 4vw, 2.7rem);
+      margin-top: .6rem;
+      color: var(--wine);
+      text-shadow: 0px 0px 3px rgba(255,255,255,0.65);
+      letter-spacing: -0.02em;
+    }
+
+    .subtitle {
+      max-width: 720px;
+      margin: .75rem auto 0;
+      color: var(--wine);
+      font-size: 1.02rem;
+      opacity: .95;
+    }
+
+    .hero-cta{
+      margin-top: 1.25rem;
+      display:flex;
+      gap:.7rem;
+      justify-content:center;
+      flex-wrap: wrap;
+    }
+
+    .btn{
+      text-decoration:none;
+      border: none;
+      cursor:pointer;
+      padding: .85rem 1.05rem;
+      border-radius: 999px;
+      font-weight: 800;
+      font-size: .98rem;
+      display:inline-flex;
+      align-items:center;
+      gap:.5rem;
+      transition: transform .15s ease, box-shadow .15s ease, background .15s ease;
+      box-shadow: var(--shadow-2);
+    }
+    .btn-primary{
+      background: var(--gold);
+      color:#fff;
+    }
+    .btn-primary:hover{ background: var(--gold-2); transform: translateY(-1px); }
+
+    .btn-ghost{
+      background: rgba(255,255,255,.7);
+      color: var(--wine);
+      box-shadow: 0 10px 22px rgba(127, 21, 76, 0.10);
+      border: 1px solid rgba(127, 21, 76, .10);
+    }
+    .btn-ghost:hover{ transform: translateY(-1px); background: rgba(255,255,255,.9); }
+
+    /* MAIN */
+    main {
+      max-width: var(--max);
+      margin: 1.8rem auto 3.2rem;
+      padding: 0 1.2rem;
+    }
+
+    .section-title {
+      text-align: center;
+      font-size: clamp(1.55rem, 3vw, 2.05rem);
+      margin-bottom: .35rem;
+      color: var(--gold);
+      font-weight: 900;
+      text-shadow: 0px 0px 4px rgba(255,255,255,0.7);
+    }
+    .section-subtitle {
+      text-align: center;
+      font-size: 1rem;
+      color: var(--wine);
+      margin-bottom: 1.35rem;
+      opacity: .95;
+    }
+
+    /* BENEFICIOS */
+    .benefits{
+      display:grid;
+      grid-template-columns: 1fr;
+      gap: .9rem;
+      margin: 1.2rem auto 1.8rem;
+      max-width: 980px;
+    }
+    @media (min-width: 860px){
+      .benefits{ grid-template-columns: repeat(3, 1fr); }
+    }
+    .benefit{
+      background: rgba(255,255,255,.75);
+      border: 1px solid rgba(127, 21, 76, .10);
+      border-radius: var(--radius
