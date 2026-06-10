@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SIMUPASIR v1 - IEC</title>
+<script src="./jszip.min.js"></script>
+<style>
+body{margin:0;font-family:Arial;height:100vh;overflow:hidden;background:#eef1f4;}
+#topbar{height:56px;display:flex;align-items:center;padding:8px 12px;background:#0b1b33;color:#fff;gap:8px;}
+#topbar button{border:0;border-radius:8px;padding:6px 10px;font-weight:800;cursor:pointer;}
+#topbar button.primary{background:#00c2ff;color:#06111b;}
+#app{display:flex;height:calc(100vh - 56px);}
+#library{width:300px;background:#dfe4ea;padding:10px;overflow:auto;}
+#workspace{flex:1;position:relative;background:#fff;border-left:1px solid #b9c2cc;overflow:hidden;}
+.component{position:absolute;cursor:grab;user-select:none;}
+.component.selected{outline:3px solid #2196f3;}
+.svgHost{width:100%;height:100%;}
+</style>
+</head>
+<body>
+<div id="topbar">
+  <div style="font-weight:900;font-size:18px;">SIMUPASIR v1 IEC</div>
+  <button id="simulate" class="primary">▶ Simular</button>
+  <button id="stop">■ Stop</button>
+  <button id="clear">🗑 Nuevo</button>
+  <button id="loadLib">↻ Cargar biblioteca</button>
+</div>
+<div id="app">
+  <aside id="library">
+    <h4>Biblioteca .EVC</h4>
+    <div id="libList">Presiona "Cargar biblioteca"</div>
+    <p>Coloca tus archivos .evc en /componentes</p>
+  </aside>
+  <div id="workspace"></div>
+</div>
+<script>
+let library=[],components=[],idCounter=1,selected=null;
+const workspace=document.getElementById('workspace');
+const libList=document.getElementById('libList');
+document.getElementById("loadLib").onclick=loadLibrary;
+document.getElementById("clear").onclick=()=>{components=[];render();};
+document.getElementById("simulate").onclick=()=>{};
+document.getElementById("stop").onclick=()=>{};
+
+async function loadLibrary(){
+  libList.innerHTML='Cargando...';
+  try{
+    const res=await fetch('./componentes/manifest.json');
+    const manifest=await res.json();
+    library=[];
+    for(const file of manifest.components){
+      const r=await fetch('./componentes/'+file);
+      const blob=await r.blob();
+      const zip=await JSZip.loadAsync(blob);
+      const cj=zip.file('component.json');
+      const meta=JSON.parse(await cj.async('string'));
+      const normal=await zip.file(meta.states.normal).async('string');
+      let active='';
+      if(meta.states.active && zip.file(meta.states.active)){
+        active=await zip.file(meta.states.active).async('string');
+      }
+      library.push({meta,normal,active,file});
+    }
+    renderLibrary();
+  }catch(e){
+    libList.innerHTML='Error cargando biblioteca: '+e;
+    console.error(e);
+  }
+}
+
+function renderLibrary(){
+  libList.innerHTML='';
+  library.forEach((c,i)=>{
+    const div=document.createElement('div');
+    div.style.border='1px solid #9aa8b7';div.style.padding='6px';div.style.marginBottom='6px';
+    div.style.cursor='pointer';
+    div.textContent=c.meta.name;
+    div.onclick=()=>addComponent(i);
+    libList.appendChild(div);
+  });
+}
+
+function addComponent(idx){
+  const def=library[idx];
+  const c={id:'C'+idCounter++,libIndex:idx,x:50+Math.random()*200,y:50+Math.random()*200,w:100,h:100};
+  components.push(c);
+  render();
+}
+
+function render(){
+  workspace.innerHTML='';
+  components.forEach(c=>{
+    const el=document.createElement('div');
+    el.className='component';
+    el.style.left=c.x+'px';el.style.top=c.y+'px';el.style.width=c.w+'px';el.style.height=c.h+'px';
+    const host=document.createElement('div');
+    host.className='svgHost';
+    const def=library[c.libIndex];
+    host.innerHTML=def.normal;
+    el.appendChild(host);
+    workspace.appendChild(el);
+
+    // drag logic
+    let offsetX=0,offsetY=0,dragging=false;
+    el.onpointerdown=(ev)=>{
+      dragging=true;
+      offsetX=ev.clientX-c.x;
+      offsetY=ev.clientY-c.y;
+      el.setPointerCapture(ev.pointerId);
+    };
+    el.onpointermove=(ev)=>{
+      if(!dragging) return;
+      c.x=ev.clientX-offsetX;
+      c.y=ev.clientY-offsetY;
+      render();
+    };
+    el.onpointerup=(ev)=>{dragging=false;}
+  });
+}
+
+loadLibrary();
+render();
+</script>
+</body>
+</html>
