@@ -1,0 +1,9 @@
+SIMUPLC LAB 1.7.0-PHASE3
+BLOQUE PID
+
+- PID disponible en FBD y Ladder.
+- Entradas analógicas PV y SP.
+- Salida analógica OUT.
+- Kp, Ki, Kd, muestreo, límites, auto/manual y calefacción/refrigeración.
+- Anti-windup básico y transferencia manual estable.
+- Generación Arduino y ESP32.

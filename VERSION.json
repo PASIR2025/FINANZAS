@@ -1,0 +1,14 @@
+{
+  "app": "SimuPLC Lab",
+  "version": "1.2.16-plc-global",
+  "date": "2026-08-10",
+  "base": "SimuPLC_V14_Backend_Configurado_ESPERAR_PERMISOS.zip",
+  "projectSchema": 1,
+  "fbdSchema": 5,
+  "ladderSchema": 4,
+  "cache": "simuplc-1-2-plc-global-v16",
+  "buildDate": "2026-08-10",
+  "phase": 3,
+  "description": "SimuPLC V16: perfil PLC global compartido entre FBD, Ladder, HMI y generador MCU. Incluye SimuPLC actual, S7-1200, LOGO! 8, PLC Arduino y PLC ESP32; direccionamiento I/Q secuencial o byte.bit (I0.0/Q0.0), migración de proyectos y mapeo lógico a pines. Billing V14 permanece sin cambios.",
+  "step": "plc-global-v16"
+}
