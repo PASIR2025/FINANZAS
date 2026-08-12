@@ -1,0 +1,15 @@
+{
+  "app": "SimuPLC Lab",
+  "version": "1.2-v16-hmi-autonomous-v24",
+  "date": "2026-08-12",
+  "base": "SimuPLC_V14_Backend_Configurado_ESPERAR_PERMISOS.zip",
+  "projectSchema": 1,
+  "fbdSchema": 5,
+  "ladderSchema": 4,
+  "cache": "simuplc-1-2-plc-global-v16-hmi-autonomous-v24",
+  "buildDate": "2026-08-12",
+  "phase": 3,
+  "description": "SimuPLC V16 HMI Autónomo V24: Arduino/ESP32 ejecutan el programa sin HMI; al conectarse, HMI/Físico/Ambos controla la fuente de entradas. Solo HMI ignora sensores físicos de proceso y conserva prioridad para seguridad NC. Selector HMI animado con PLC conectado. Tabla Profesional V2 y Billing V14 se conservan.",
+  "step": "hmi-autonomous-v24",
+  "notes": "Control autónomo sin HMI; Solo HMI aísla sensores físicos de proceso; seguridad NC física prioritaria; selector HMI animado con PLC conectado."
+}
