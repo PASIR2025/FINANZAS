@@ -1,4 +1,0 @@
-PASIR Gestión PWA V4.3
-Base funcional: PASIR Gestión PWA V4.2
-Fecha: 2026-09-01
-Mejora: Biblioteca de información comercial y respuestas rápidas.
