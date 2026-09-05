@@ -1,0 +1,45 @@
+{
+  "id": "./",
+  "name": "PASIR Gestión — Escuela PASIR",
+  "short_name": "PASIR",
+  "description": "Sistema integral de gestión de Escuela PASIR: finanzas, proyectos, cursos, metas, ventas, rentabilidad e información comercial.",
+  "lang": "es-PE",
+  "dir": "ltr",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "display_override": [
+    "window-controls-overlay",
+    "standalone",
+    "minimal-ui"
+  ],
+  "orientation": "any",
+  "background_color": "#f4f7fb",
+  "theme_color": "#071b35",
+  "categories": [
+    "business",
+    "finance",
+    "education",
+    "productivity"
+  ],
+  "icons": [
+    {
+      "src": "./assets/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./assets/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./assets/icons/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}
