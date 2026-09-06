@@ -1,0 +1,9 @@
+<!doctype html><html lang='es'><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'><meta http-equiv='Cache-Control' content='no-cache, no-store, must-revalidate'><title>Actualizar PASIR V4.9.2</title><style>body{font-family:system-ui;background:#081b33;color:#fff;display:grid;place-items:center;min-height:100vh;margin:0}.box{max-width:620px;background:#fff;color:#10233f;border-radius:20px;padding:28px;box-shadow:0 20px 60px #0005}.ok{color:#087443}button{font-size:18px;padding:12px 18px;border:0;border-radius:12px;background:#1769e0;color:white;font-weight:700}</style></head><body><div class='box'><h1>PASIR V4.9.2</h1><p id='msg'>Preparando actualización limpia…</p><button id='go' style='display:none'>Abrir PASIR V4.9.2</button></div><script>
+(async()=>{const msg=document.getElementById('msg'),go=document.getElementById('go');try{
+if('serviceWorker'in navigator){const regs=await navigator.serviceWorker.getRegistrations();for(const r of regs)await r.unregister();}
+if('caches'in window){const keys=await caches.keys();for(const k of keys){if(k.startsWith('pasir-gestion-'))await caches.delete(k);}}
+msg.innerHTML='<b class="ok">Actualización preparada.</b><br>Se eliminaron únicamente cachés antiguos de la aplicación. Tus datos y la configuración de Supabase NO se borraron.';
+go.style.display='inline-block';go.onclick=()=>location.replace('./index.html?v=4.9.2&force='+Date.now());
+setTimeout(()=>go.click(),1200);
+}catch(e){msg.textContent='No se pudo limpiar la caché automáticamente: '+e.message;go.style.display='inline-block';go.onclick=()=>location.replace('./index.html?v=4.9.2&force='+Date.now());}})();
+</script></body></html>
