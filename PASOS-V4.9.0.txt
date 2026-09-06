@@ -1,0 +1,9 @@
+PASIR Gestión V4.9.0
+
+1. Reemplaza en GitHub todo el contenido por esta carpeta.
+2. NO vuelvas a ejecutar supabase-schema.sql.
+3. El parche SUPABASE-PARCHE-V4.8.0.sql ya ejecutado es compatible y suficiente.
+4. Abre la app y confirma V4.9.0.
+5. Prueba: crear cuenta -> sincronizar -> comprobar que siga; crear movimiento -> eliminar -> sincronizar -> cerrar/abrir.
+
+Cambio clave: la sincronización general ya NO hace upsert masivo de state.transactions. Los movimientos solo se crean/editan individualmente y los borrados usan tombstones + RPC de Supabase.
