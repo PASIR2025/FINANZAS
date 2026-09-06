@@ -1,0 +1,3 @@
+ARCHIVOS HISTÓRICOS V4 — SOLO REFERENCIA.
+NO subas estos JS como runtime (ya no existen aquí) y NO ejecutes estos parches SQL sobre V5.
+Para actualizar una base existente a V5.0.0 usa únicamente ../SUPABASE-MIGRACION-V5.0.0.sql
