@@ -1,7 +1,0 @@
-PASIR V4.9.1
-
-1) Reemplazar archivos del repositorio.
-2) Supabase > SQL Editor > ejecutar SUPABASE-PARCHE-V4.9.1.sql.
-3) Debe mostrar: PASIR V4.9.1 listo.
-4) Abrir PASIR y verificar V4.9.1 en la barra lateral.
-5) Probar eliminación de un movimiento antiguo.
